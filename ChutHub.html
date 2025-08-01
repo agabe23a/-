@@ -3,1015 +3,1277 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>ChatHub - Real-Time Messaging</title>
+    <title>LearnAnything - Your Learning Journey Starts Here</title>
     <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <style>
         :root {
-            --primary-color: #0084ff;
-            --secondary-color: #f0f2f5;
-            --light-gray: #e4e6eb;
-            --dark-gray: #65676b;
-            --darker-gray: #3e4042;
-            --white: #ffffff;
-            --black: #050505;
-            --online-indicator: #31a24c;
-            --typing-indicator: #a0a0a0;
-            --message-sent: #0084ff;
-            --message-received: #e4e6eb;
-            --unread-badge: #1877f2;
-            --sidebar-width: 360px;
-            --header-height: 60px;
-            --input-height: 60px;
+            --primary: #4361ee;
+            --secondary: #3f37c9;
+            --accent: #4cc9f0;
+            --light: #f8f9fa;
+            --dark: #212529;
+            --success: #4ade80;
+            --warning: #f59e0b;
+            --danger: #ef4444;
+            --coding: #4361ee;
+            --business: #7209b7;
+            --art: #f72585;
+            --design: #ff6b6b;
+            --tech: #06d6a0;
+            --soft-skills: #ff9e00;
         }
-
+        
         * {
             margin: 0;
             padding: 0;
             box-sizing: border-box;
-            font-family: 'Segoe UI', Helvetica, Arial, sans-serif;
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
         }
-
+        
         body {
-            background-color: #f0f2f5;
-            height: 100vh;
-            display: flex;
-            overflow: hidden;
+            background-color: #f5f7fb;
+            color: #333;
+            line-height: 1.6;
         }
-
-        /* Auth Screens */
-        .auth-container {
-            display: flex;
+        
+        .container {
             width: 100%;
-            height: 100vh;
-            align-items: center;
-            justify-content: center;
-            background: linear-gradient(135deg, #0084ff 0%, #00c6ff 100%);
-        }
-
-        .auth-card {
-            background: var(--white);
-            border-radius: 12px;
-            box-shadow: 0 4px 20px rgba(0, 0, 0, 0.15);
-            width: 420px;
-            padding: 32px;
-            text-align: center;
-        }
-
-        .app-logo {
-            color: var(--primary-color);
-            font-size: 42px;
-            margin-bottom: 16px;
-        }
-
-        .auth-card h1 {
-            font-size: 28px;
-            margin-bottom: 24px;
-            color: var(--black);
-        }
-
-        .auth-tabs {
-            display: flex;
-            margin-bottom: 24px;
-            border-bottom: 1px solid var(--light-gray);
-        }
-
-        .auth-tab {
-            flex: 1;
-            padding: 12px;
-            cursor: pointer;
-            font-weight: 600;
-            color: var(--dark-gray);
-            transition: all 0.2s;
-        }
-
-        .auth-tab.active {
-            color: var(--primary-color);
-            border-bottom: 3px solid var(--primary-color);
-        }
-
-        .auth-form {
-            display: none;
-        }
-
-        .auth-form.active {
-            display: block;
-        }
-
-        .input-group {
-            margin-bottom: 16px;
-            text-align: left;
-        }
-
-        .input-group label {
-            display: block;
-            margin-bottom: 8px;
-            font-weight: 500;
-            color: var(--darker-gray);
-        }
-
-        .input-group input {
-            width: 100%;
-            padding: 14px;
-            border: 1px solid var(--light-gray);
-            border-radius: 8px;
-            font-size: 16px;
-            transition: border-color 0.2s;
-        }
-
-        .input-group input:focus {
-            outline: none;
-            border-color: var(--primary-color);
-            box-shadow: 0 0 0 2px rgba(0, 132, 255, 0.2);
-        }
-
-        .btn {
-            display: block;
-            width: 100%;
-            padding: 14px;
-            background-color: var(--primary-color);
-            color: white;
-            border: none;
-            border-radius: 8px;
-            font-size: 16px;
-            font-weight: 600;
-            cursor: pointer;
-            transition: background-color 0.2s;
-        }
-
-        .btn:hover {
-            background-color: #0069d9;
-        }
-
-        .divider {
-            height: 1px;
-            background-color: var(--light-gray);
-            margin: 24px 0;
-            position: relative;
-        }
-
-        .divider-text {
-            position: absolute;
-            top: -10px;
-            left: 50%;
-            transform: translateX(-50%);
-            background: white;
-            padding: 0 12px;
-            color: var(--dark-gray);
-            font-size: 14px;
-        }
-
-        .auth-footer {
-            margin-top: 16px;
-            font-size: 14px;
-            color: var(--dark-gray);
-        }
-
-        .auth-footer a {
-            color: var(--primary-color);
-            text-decoration: none;
-            font-weight: 600;
-        }
-
-        /* Chat Interface */
-        .chat-container {
-            display: none;
-            width: 100%;
-            height: 100vh;
-            background-color: var(--white);
-        }
-
-        /* Sidebar */
-        .sidebar {
-            width: var(--sidebar-width);
-            height: 100%;
-            background-color: var(--white);
-            border-right: 1px solid var(--light-gray);
-            display: flex;
-            flex-direction: column;
-        }
-
-        .header {
-            height: var(--header-height);
-            padding: 0 16px;
-            display: flex;
-            align-items: center;
-            justify-content: space-between;
-            border-bottom: 1px solid var(--light-gray);
-        }
-
-        .user-info {
-            display: flex;
-            align-items: center;
-            gap: 12px;
-        }
-
-        .avatar {
-            width: 40px;
-            height: 40px;
-            border-radius: 50%;
-            background-color: var(--secondary-color);
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            font-weight: 600;
-            color: var(--primary-color);
-            position: relative;
-        }
-
-        .avatar img {
-            width: 100%;
-            height: 100%;
-            border-radius: 50%;
-            object-fit: cover;
-        }
-
-        .online-status {
-            position: absolute;
-            bottom: -2px;
-            right: -2px;
-            width: 12px;
-            height: 12px;
-            background-color: var(--online-indicator);
-            border-radius: 50%;
-            border: 2px solid var(--white);
-        }
-
-        .user-details {
-            display: flex;
-            flex-direction: column;
-        }
-
-        .user-name {
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        .user-status {
-            font-size: 12px;
-            color: var(--dark-gray);
-        }
-
-        .header-icons {
-            display: flex;
-            gap: 16px;
-            color: var(--dark-gray);
-        }
-
-        .header-icon {
-            cursor: pointer;
-            font-size: 20px;
-            padding: 6px;
-            border-radius: 50%;
-            transition: all 0.2s;
-        }
-
-        .header-icon:hover {
-            background-color: var(--secondary-color);
-        }
-
-        /* Search */
-        .search-container {
-            padding: 10px 16px;
-            border-bottom: 1px solid var(--light-gray);
-        }
-
-        .search-box {
-            background-color: var(--secondary-color);
-            border-radius: 20px;
-            padding: 8px 16px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
-        }
-
-        .search-box i {
-            color: var(--dark-gray);
-        }
-
-        .search-box input {
-            border: none;
-            background: transparent;
-            flex: 1;
-            padding: 6px 0;
-            font-size: 15px;
-            outline: none;
-        }
-
-        /* Conversations */
-        .conversations {
-            flex: 1;
-            overflow-y: auto;
-        }
-
-        .conversation {
-            display: flex;
-            padding: 12px 16px;
-            gap: 12px;
-            cursor: pointer;
-            transition: background-color 0.2s;
-            position: relative;
-        }
-
-        .conversation:hover {
-            background-color: var(--secondary-color);
-        }
-
-        .conversation.active {
-            background-color: var(--light-gray);
-        }
-
-        .conversation-avatar {
-            position: relative;
-        }
-
-        .conversation-info {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            justify-content: center;
-            min-width: 0;
-        }
-
-        .conversation-top {
-            display: flex;
-            justify-content: space-between;
-            margin-bottom: 4px;
-        }
-
-        .conversation-name {
-            font-weight: 600;
-            font-size: 15px;
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-        }
-
-        .conversation-time {
-            font-size: 12px;
-            color: var(--dark-gray);
-        }
-
-        .conversation-bottom {
-            display: flex;
-            justify-content: space-between;
-        }
-
-        .conversation-last-msg {
-            font-size: 14px;
-            color: var(--dark-gray);
-            white-space: nowrap;
-            overflow: hidden;
-            text-overflow: ellipsis;
-            max-width: 220px;
-        }
-
-        .conversation-unread {
-            background-color: var(--unread-badge);
-            color: white;
-            font-size: 12px;
-            font-weight: 600;
-            border-radius: 50%;
-            width: 20px;
-            height: 20px;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-        }
-
-        /* Chat Area */
-        .chat-area {
-            flex: 1;
-            display: flex;
-            flex-direction: column;
-            height: 100%;
-        }
-
-        .chat-header {
-            height: var(--header-height);
+            max-width: 1200px;
+            margin: 0 auto;
             padding: 0 20px;
-            display: flex;
-            align-items: center;
-            gap: 12px;
-            border-bottom: 1px solid var(--light-gray);
         }
-
-        .chat-header-info {
-            flex: 1;
-        }
-
-        .chat-header-name {
-            font-weight: 600;
-            font-size: 16px;
-        }
-
-        .chat-header-status {
-            font-size: 13px;
-            color: var(--dark-gray);
-        }
-
-        .chat-messages {
-            flex: 1;
-            padding: 20px;
-            overflow-y: auto;
-            display: flex;
-            flex-direction: column;
-            gap: 16px;
-            background-color: var(--white);
-            background-image: url("data:image/svg+xml,%3Csvg width='100' height='100' viewBox='0 0 100 100' xmlns='http://www.w3.org/2000/svg'%3E%3Cpath d='M11 18c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm48 25c3.866 0 7-3.134 7-7s-3.134-7-7-7-7 3.134-7 7 3.134 7 7 7zm-43-7c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm63 31c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM34 90c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zm56-76c1.657 0 3-1.343 3-3s-1.343-3-3-3-3 1.343-3 3 1.343 3 3 3zM12 86c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm28-65c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm23-11c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-6 60c2.21 0 4-1.79 4-4s-1.79-4-4-4-4 1.79-4 4 1.79 4 4 4zm29 22c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zM32 63c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm57-13c2.76 0 5-2.24 5-5s-2.24-5-5-5-5 2.24-5 5 2.24 5 5 5zm-9-21c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM60 91c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM35 41c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2zM12 60c1.105 0 2-.895 2-2s-.895-2-2-2-2 .895-2 2 .895 2 2 2z' fill='%23e4e6eb' fill-opacity='0.4' fill-rule='evenodd'/%3E%3C/svg%3E");
-        }
-
-        .message {
-            display: flex;
-            flex-direction: column;
-            max-width: 65%;
-            position: relative;
-        }
-
-        .message-sent {
-            align-self: flex-end;
-        }
-
-        .message-received {
-            align-self: flex-start;
-        }
-
-        .message-bubble {
-            padding: 12px 16px;
-            border-radius: 18px;
-            font-size: 15px;
-            line-height: 1.4;
-            position: relative;
-            word-wrap: break-word;
-        }
-
-        .message-sent .message-bubble {
-            background-color: var(--message-sent);
+        
+        /* Header Styles */
+        header {
+            background: linear-gradient(135deg, var(--primary), var(--secondary));
             color: white;
-            border-bottom-right-radius: 4px;
+            padding: 1rem 0;
+            position: sticky;
+            top: 0;
+            z-index: 100;
+            box-shadow: 0 2px 10px rgba(0,0,0,0.1);
         }
-
-        .message-received .message-bubble {
-            background-color: var(--message-received);
-            color: var(--black);
-            border-bottom-left-radius: 4px;
+        
+        .header-content {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
         }
-
-        .message-time {
-            font-size: 11px;
-            color: var(--dark-gray);
-            margin-top: 4px;
-            text-align: right;
-            padding: 0 4px;
-        }
-
-        .typing-indicator {
+        
+        .logo {
             display: flex;
             align-items: center;
-            padding: 8px 16px;
-            margin: 8px 0;
-            background-color: var(--message-received);
-            border-radius: 18px;
-            align-self: flex-start;
+            gap: 10px;
+            font-size: 1.8rem;
+            font-weight: 700;
         }
-
-        .typing-indicator span {
-            height: 8px;
-            width: 8px;
-            border-radius: 50%;
-            background-color: var(--typing-indicator);
+        
+        .logo i {
+            color: var(--accent);
+        }
+        
+        nav ul {
+            display: flex;
+            list-style: none;
+            gap: 2rem;
+        }
+        
+        nav a {
+            color: white;
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            padding: 8px 12px;
+            border-radius: 50px;
+        }
+        
+        nav a:hover, nav a.active {
+            background: rgba(255,255,255,0.2);
+        }
+        
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .btn {
+            padding: 10px 20px;
+            border-radius: 50px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+        }
+        
+        .btn-primary {
+            background: var(--accent);
+            color: white;
+        }
+        
+        .btn-outline {
+            background: transparent;
+            border: 2px solid white;
+            color: white;
+        }
+        
+        .btn:hover {
+            transform: translateY(-3px);
+            box-shadow: 0 5px 15px rgba(0,0,0,0.1);
+        }
+        
+        /* Hero Section */
+        .hero {
+            background: linear-gradient(rgba(67, 97, 238, 0.9), rgba(63, 55, 201, 0.9)), url('https://images.unsplash.com/photo-1499951360447-b19be8fe80f5?ixlib=rb-4.0.3&auto=format&fit=crop&w=1920&q=80');
+            background-size: cover;
+            background-position: center;
+            color: white;
+            text-align: center;
+            padding: 5rem 0;
+            margin-bottom: 3rem;
+        }
+        
+        .hero h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            max-width: 800px;
+            margin-left: auto;
+            margin-right: auto;
+        }
+        
+        .hero p {
+            font-size: 1.2rem;
+            max-width: 600px;
+            margin: 0 auto 2rem;
+            opacity: 0.9;
+        }
+        
+        /* Search Section */
+        .search-section {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin: -50px auto 3rem;
+            max-width: 800px;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+            position: relative;
+            z-index: 10;
+        }
+        
+        .search-container {
+            display: flex;
+            gap: 10px;
+        }
+        
+        .search-input {
+            flex: 1;
+            padding: 15px 20px;
+            border-radius: 50px;
+            border: 2px solid #e2e8f0;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+        
+        .search-input:focus {
+            border-color: var(--accent);
+            outline: none;
+            box-shadow: 0 0 0 3px rgba(76, 201, 240, 0.3);
+        }
+        
+        .search-btn {
+            background: var(--primary);
+            color: white;
+            border: none;
+            border-radius: 50px;
+            padding: 0 30px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+        
+        .search-btn:hover {
+            background: var(--secondary);
+        }
+        
+        /* Top Topics */
+        .top-topics {
+            margin-bottom: 3rem;
+        }
+        
+        .section-title {
+            text-align: center;
+            margin-bottom: 2rem;
+            font-size: 2rem;
+            color: var(--dark);
+            position: relative;
+        }
+        
+        .section-title:after {
+            content: '';
+            display: block;
+            width: 80px;
+            height: 4px;
+            background: var(--accent);
+            margin: 10px auto;
+            border-radius: 2px;
+        }
+        
+        .topics-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(180px, 1fr));
+            gap: 1.5rem;
+        }
+        
+        .topic-card {
+            background: white;
+            border-radius: 15px;
+            padding: 1.5rem;
+            text-align: center;
+            box-shadow: 0 5px 15px rgba(0,0,0,0.05);
+            transition: all 0.3s ease;
+            cursor: pointer;
+            position: relative;
+            overflow: hidden;
+            z-index: 1;
+        }
+        
+        .topic-card:before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--coding);
+            z-index: 2;
+        }
+        
+        .topic-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 10px 25px rgba(0,0,0,0.1);
+        }
+        
+        .topic-card.coding:before { background: var(--coding); }
+        .topic-card.business:before { background: var(--business); }
+        .topic-card.art:before { background: var(--art); }
+        .topic-card.design:before { background: var(--design); }
+        .topic-card.tech:before { background: var(--tech); }
+        .topic-card.soft-skills:before { background: var(--soft-skills); }
+        
+        .topic-icon {
+            font-size: 2.5rem;
+            margin-bottom: 1rem;
+        }
+        
+        .topic-card.coding .topic-icon { color: var(--coding); }
+        .topic-card.business .topic-icon { color: var(--business); }
+        .topic-card.art .topic-icon { color: var(--art); }
+        .topic-card.design .topic-icon { color: var(--design); }
+        .topic-card.tech .topic-icon { color: var(--tech); }
+        .topic-card.soft-skills .topic-icon { color: var(--soft-skills); }
+        
+        /* Category Sections */
+        .categories {
+            margin-bottom: 3rem;
+        }
+        
+        .category {
+            margin-bottom: 3rem;
+            background: white;
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 5px 20px rgba(0,0,0,0.05);
+        }
+        
+        .category-header {
+            padding: 1.5rem 2rem;
+            color: white;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+        
+        .category.coding .category-header { background: var(--coding); }
+        .category.business .category-header { background: var(--business); }
+        .category.art .category-header { background: var(--art); }
+        .category.design .category-header { background: var(--design); }
+        .category.tech .category-header { background: var(--tech); }
+        .category.soft-skills .category-header { background: var(--soft-skills); }
+        
+        .category-title {
+            font-size: 1.8rem;
+            display: flex;
+            align-items: center;
+            gap: 10px;
+        }
+        
+        .topics-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fill, minmax(300px, 1fr));
+            gap: 1.5rem;
+            padding: 2rem;
+        }
+        
+        /* Learning Guide */
+        .learning-guide {
+            display: none;
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .guide-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #e2e8f0;
+        }
+        
+        .guide-title {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            font-size: 2rem;
+        }
+        
+        .level-selector {
+            display: flex;
+            gap: 10px;
+            margin-bottom: 2rem;
+        }
+        
+        .level-btn {
+            padding: 10px 20px;
+            border-radius: 50px;
+            background: #e2e8f0;
+            border: none;
+            cursor: pointer;
+            font-weight: 600;
+            transition: all 0.3s ease;
+        }
+        
+        .level-btn.active {
+            background: var(--primary);
+            color: white;
+        }
+        
+        .guide-content {
+            display: flex;
+            gap: 2rem;
+        }
+        
+        .overview {
+            flex: 1;
+        }
+        
+        .resources {
+            flex: 1;
+        }
+        
+        .content-section {
+            margin-bottom: 2rem;
+        }
+        
+        .content-section h3 {
+            margin-bottom: 1rem;
+            padding-bottom: 10px;
+            border-bottom: 2px solid var(--accent);
             display: inline-block;
-            margin: 0 2px;
-            animation: typing 1.5s infinite ease-in-out;
         }
-
-        .typing-indicator span:nth-child(1) {
-            animation-delay: 0s;
+        
+        .learning-path {
+            background: #f8f9fa;
+            padding: 1.5rem;
+            border-radius: 15px;
         }
-
-        .typing-indicator span:nth-child(2) {
-            animation-delay: 0.2s;
+        
+        .step {
+            display: flex;
+            gap: 15px;
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px dashed #cbd5e0;
         }
-
-        .typing-indicator span:nth-child(3) {
-            animation-delay: 0.4s;
+        
+        .step:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border: none;
         }
-
-        @keyframes typing {
-            0%, 60%, 100% {
-                transform: translateY(0);
-            }
-            30% {
-                transform: translateY(-5px);
-            }
+        
+        .step-number {
+            min-width: 35px;
+            height: 35px;
+            background: var(--accent);
+            color: white;
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            font-weight: bold;
         }
-
-        .chat-input-container {
-            padding: 10px 16px;
-            border-top: 1px solid var(--light-gray);
+        
+        .resource-list {
+            list-style: none;
+        }
+        
+        .resource-item {
+            padding: 15px;
+            border-radius: 10px;
+            margin-bottom: 10px;
+            background: #f8f9fa;
             display: flex;
             align-items: center;
-            gap: 8px;
-            background-color: var(--white);
+            gap: 10px;
+            transition: all 0.3s ease;
         }
-
+        
+        .resource-item:hover {
+            background: #edf2f7;
+            transform: translateX(5px);
+        }
+        
+        .resource-icon {
+            font-size: 1.5rem;
+        }
+        
+        .youtube { color: #ff0000; }
+        .coursera { color: #0056d2; }
+        .udemy { color: #a435f0; }
+        .freecodecamp { color: #0a0a23; }
+        
+        /* AI Assistant */
+        .ai-assistant {
+            background: white;
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 3rem;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.1);
+        }
+        
+        .assistant-header {
+            display: flex;
+            align-items: center;
+            gap: 15px;
+            margin-bottom: 1.5rem;
+        }
+        
+        .assistant-icon {
+            width: 50px;
+            height: 50px;
+            background: linear-gradient(135deg, #4cc9f0, #4361ee);
+            border-radius: 50%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            color: white;
+            font-size: 1.5rem;
+        }
+        
+        .chat-container {
+            background: #f8f9fa;
+            border-radius: 15px;
+            padding: 1.5rem;
+            height: 300px;
+            overflow-y: auto;
+            margin-bottom: 1.5rem;
+        }
+        
+        .message {
+            margin-bottom: 1rem;
+            padding: 10px 15px;
+            border-radius: 15px;
+            max-width: 80%;
+        }
+        
+        .ai-message {
+            background: white;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+        
+        .user-message {
+            background: var(--primary);
+            color: white;
+            align-self: flex-end;
+            margin-left: auto;
+            border-bottom-right-radius: 5px;
+        }
+        
+        .chat-input-container {
+            display: flex;
+            gap: 10px;
+        }
+        
         .chat-input {
             flex: 1;
-            background-color: var(--secondary-color);
-            border-radius: 20px;
-            padding: 12px 20px;
-            display: flex;
-            align-items: center;
-            gap: 8px;
+            padding: 15px 20px;
+            border-radius: 50px;
+            border: 2px solid #e2e8f0;
+            font-size: 1rem;
         }
-
-        .chat-input i {
-            color: var(--dark-gray);
-            cursor: pointer;
-        }
-
-        .chat-input input {
-            border: none;
-            background: transparent;
-            flex: 1;
-            padding: 0;
-            font-size: 15px;
-            outline: none;
-        }
-
+        
         .send-btn {
-            width: 48px;
-            height: 48px;
-            border-radius: 50%;
-            background-color: var(--primary-color);
+            background: var(--primary);
             color: white;
-            display: flex;
-            align-items: center;
-            justify-content: center;
-            cursor: pointer;
             border: none;
-            font-size: 18px;
-            transition: background-color 0.2s;
-        }
-
-        .send-btn:hover {
-            background-color: #0069d9;
-        }
-
-        /* Responsive Design */
-        @media (max-width: 900px) {
-            .conversation-last-msg {
-                max-width: 150px;
-            }
-        }
-
-        @media (max-width: 768px) {
-            .sidebar {
-                width: 100%;
-                display: none;
-            }
-            
-            .chat-area {
-                display: none;
-            }
-            
-            .sidebar.active {
-                display: flex;
-            }
-            
-            .chat-area.active {
-                display: flex;
-            }
-            
-            .back-to-conversations {
-                display: block;
-            }
-        }
-
-        .back-to-conversations {
-            display: none;
-            margin-right: 10px;
+            border-radius: 50px;
+            width: 50px;
+            height: 50px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
             cursor: pointer;
+        }
+        
+        /* Footer */
+        footer {
+            background: var(--dark);
+            color: white;
+            padding: 3rem 0;
+        }
+        
+        .footer-content {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 2rem;
+        }
+        
+        .footer-section h3 {
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-bottom: 10px;
+        }
+        
+        .footer-section h3:after {
+            content: '';
+            position: absolute;
+            bottom: 0;
+            left: 0;
+            width: 50px;
+            height: 3px;
+            background: var(--accent);
+        }
+        
+        .footer-links {
+            list-style: none;
+        }
+        
+        .footer-links li {
+            margin-bottom: 10px;
+        }
+        
+        .footer-links a {
+            color: #a0aec0;
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+        
+        .footer-links a:hover {
+            color: white;
+            padding-left: 5px;
+        }
+        
+        .copyright {
+            text-align: center;
+            padding-top: 2rem;
+            margin-top: 2rem;
+            border-top: 1px solid #2d3748;
+            color: #a0aec0;
+        }
+        
+        /* Responsive Design */
+        @media (max-width: 768px) {
+            .header-content {
+                flex-direction: column;
+                gap: 1rem;
+            }
+            
+            nav ul {
+                gap: 1rem;
+                flex-wrap: wrap;
+                justify-content: center;
+            }
+            
+            .hero h1 {
+                font-size: 2.5rem;
+            }
+            
+            .search-container {
+                flex-direction: column;
+            }
+            
+            .search-btn {
+                padding: 15px;
+            }
+            
+            .guide-content {
+                flex-direction: column;
+            }
+            
+            .topics-grid {
+                grid-template-columns: repeat(auto-fill, minmax(140px, 1fr));
+            }
+        }
+        
+        @media (max-width: 480px) {
+            .hero {
+                padding: 3rem 0;
+            }
+            
+            .hero h1 {
+                font-size: 2rem;
+            }
+            
+            .topics-grid {
+                grid-template-columns: repeat(2, 1fr);
+            }
+            
+            .topics-container {
+                grid-template-columns: 1fr;
+            }
         }
     </style>
 </head>
 <body>
-    <!-- Authentication Screen -->
-    <div id="auth-screen" class="auth-container">
-        <div class="auth-card">
-            <div class="app-logo">
-                <i class="fab fa-facebook-messenger"></i>
-            </div>
-            <h1>Welcome to ChatHub</h1>
-            
-            <div class="auth-tabs">
-                <div class="auth-tab active" data-tab="login">Login</div>
-                <div class="auth-tab" data-tab="register">Register</div>
-            </div>
-            
-            <div id="login-form" class="auth-form active">
-                <div class="input-group">
-                    <label for="login-email">Email</label>
-                    <input type="email" id="login-email" placeholder="Enter your email">
-                </div>
-                <div class="input-group">
-                    <label for="login-password">Password</label>
-                    <input type="password" id="login-password" placeholder="Enter your password">
-                </div>
-                <button class="btn" id="login-btn">Log In</button>
-                
-                <div class="divider">
-                    <span class="divider-text">OR</span>
+    <!-- Header -->
+    <header>
+        <div class="container">
+            <div class="header-content">
+                <div class="logo">
+                    <i class="fas fa-graduation-cap"></i>
+                    <span>LearnAnything</span>
                 </div>
                 
-                <button class="btn" style="background-color: #1877f2;">
-                    <i class="fab fa-facebook"></i> Continue with Facebook
-                </button>
+                <nav>
+                    <ul>
+                        <li><a href="#" class="active">Home</a></li>
+                        <li><a href="#">Topics</a></li>
+                        <li><a href="#">Learning Paths</a></li>
+                        <li><a href="#">Resources</a></li>
+                        <li><a href="#">Community</a></li>
+                    </ul>
+                </nav>
                 
-                <div class="auth-footer">
-                    <a href="#">Forgot password?</a>
-                </div>
-            </div>
-            
-            <div id="register-form" class="auth-form">
-                <div class="input-group">
-                    <label for="register-name">Full Name</label>
-                    <input type="text" id="register-name" placeholder="Enter your full name">
-                </div>
-                <div class="input-group">
-                    <label for="register-email">Email</label>
-                    <input type="email" id="register-email" placeholder="Enter your email">
-                </div>
-                <div class="input-group">
-                    <label for="register-password">Password</label>
-                    <input type="password" id="register-password" placeholder="Create a password">
-                </div>
-                <button class="btn" id="register-btn">Create Account</button>
-                
-                <div class="auth-footer">
-                    Already have an account? <a href="#" id="switch-to-login">Log In</a>
+                <div class="auth-buttons">
+                    <button class="btn btn-outline">Login</button>
+                    <button class="btn btn-primary">Sign Up</button>
                 </div>
             </div>
         </div>
-    </div>
+    </header>
     
-    <!-- Chat Interface -->
-    <div id="chat-screen" class="chat-container">
-        <!-- Sidebar with conversations -->
-        <div class="sidebar active">
-            <div class="header">
-                <div class="user-info">
-                    <div class="avatar">
-                        <span>JS</span>
-                        <div class="online-status"></div>
-                    </div>
-                    <div class="user-details">
-                        <div class="user-name">John Smith</div>
-                        <div class="user-status">Online</div>
-                    </div>
-                </div>
-                <div class="header-icons">
-                    <div class="header-icon">
-                        <i class="fas fa-circle-notch"></i>
-                    </div>
-                    <div class="header-icon">
-                        <i class="fas fa-comment-alt"></i>
-                    </div>
-                    <div class="header-icon">
-                        <i class="fas fa-ellipsis-v"></i>
-                    </div>
-                </div>
-            </div>
-            
+    <!-- Hero Section -->
+    <section class="hero">
+        <div class="container">
+            <h1>What do you want to learn today?</h1>
+            <p>Discover personalized learning paths, curated resources, and expert guidance for any topic you want to master.</p>
+        </div>
+    </section>
+    
+    <!-- Search Section -->
+    <section class="search-section">
+        <div class="container">
             <div class="search-container">
-                <div class="search-box">
-                    <i class="fas fa-search"></i>
-                    <input type="text" placeholder="Search messages">
-                </div>
-            </div>
-            
-            <div class="conversations">
-                <!-- Conversation list will be populated dynamically -->
+                <input type="text" class="search-input" placeholder="Search for a topic (e.g. Python, Digital Marketing, UI/UX)">
+                <button class="search-btn">Search</button>
             </div>
         </div>
-        
-        <!-- Chat area -->
-        <div class="chat-area">
-            <div class="chat-header">
-                <div class="back-to-conversations">
-                    <i class="fas fa-arrow-left"></i>
+    </section>
+    
+    <!-- Top Topics -->
+    <section class="top-topics">
+        <div class="container">
+            <h2 class="section-title">Top Searched Topics</h2>
+            
+            <div class="topics-grid">
+                <div class="topic-card coding" data-topic="python">
+                    <div class="topic-icon">
+                        <i class="fab fa-python"></i>
+                    </div>
+                    <h3>Python</h3>
+                    <p>Programming</p>
                 </div>
-                <div class="user-info">
-                    <div class="avatar">
-                        <span>ES</span>
-                        <div class="online-status"></div>
+                
+                <div class="topic-card design" data-topic="ui-ux">
+                    <div class="topic-icon">
+                        <i class="fas fa-paint-brush"></i>
                     </div>
-                    <div class="chat-header-info">
-                        <div class="chat-header-name">Emma Stone</div>
-                        <div class="chat-header-status">Online - Last seen just now</div>
+                    <h3>UI/UX Design</h3>
+                    <p>Design</p>
+                </div>
+                
+                <div class="topic-card tech" data-topic="ai-ml">
+                    <div class="topic-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>AI & ML</h3>
+                    <p>Technology</p>
+                </div>
+                
+                <div class="topic-card business" data-topic="digital-marketing">
+                    <div class="topic-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Digital Marketing</h3>
+                    <p>Business</p>
+                </div>
+                
+                <div class="topic-card soft-skills" data-topic="public-speaking">
+                    <div class="topic-icon">
+                        <i class="fas fa-microphone"></i>
+                    </div>
+                    <h3>Public Speaking</h3>
+                    <p>Soft Skills</p>
+                </div>
+                
+                <div class="topic-card coding" data-topic="javascript">
+                    <div class="topic-icon">
+                        <i class="fab fa-js"></i>
+                    </div>
+                    <h3>JavaScript</h3>
+                    <p>Programming</p>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Learning Guide (Hidden by default) -->
+    <section class="learning-guide" id="learning-guide">
+        <div class="container">
+            <div class="guide-header">
+                <div class="guide-title">
+                    <i class="fab fa-python"></i>
+                    <h2>Python Programming</h2>
+                </div>
+                <button class="btn btn-primary">
+                    <i class="fas fa-bookmark"></i> Save Path
+                </button>
+            </div>
+            
+            <div class="level-selector">
+                <button class="level-btn active" data-level="beginner">Beginner</button>
+                <button class="level-btn" data-level="intermediate">Intermediate</button>
+                <button class="level-btn" data-level="advanced">Advanced</button>
+            </div>
+            
+            <div class="guide-content">
+                <div class="overview">
+                    <div class="content-section">
+                        <h3>Overview</h3>
+                        <p>Python is a versatile, high-level programming language known for its readability and simplicity. It's widely used in web development, data science, AI, automation, and more. Python's extensive libraries and frameworks make it a favorite among beginners and professionals alike.</p>
+                    </div>
+                    
+                    <div class="content-section">
+                        <h3>Learning Path</h3>
+                        <div class="learning-path">
+                            <div class="step">
+                                <div class="step-number">1</div>
+                                <div class="step-content">
+                                    <h4>Python Basics</h4>
+                                    <p>Learn syntax, variables, data types, and basic operations</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">2</div>
+                                <div class="step-content">
+                                    <h4>Control Structures</h4>
+                                    <p>Master loops, conditionals, and error handling</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">3</div>
+                                <div class="step-content">
+                                    <h4>Functions & Modules</h4>
+                                    <p>Create reusable code and organize with modules</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">4</div>
+                                <div class="step-content">
+                                    <h4>Data Structures</h4>
+                                    <p>Understand lists, tuples, dictionaries, and sets</p>
+                                </div>
+                            </div>
+                            
+                            <div class="step">
+                                <div class="step-number">5</div>
+                                <div class="step-content">
+                                    <h4>Object-Oriented Programming</h4>
+                                    <p>Learn classes, objects, inheritance, and polymorphism</p>
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
-                <div class="header-icons">
-                    <div class="header-icon">
-                        <i class="fas fa-phone-alt"></i>
+                
+                <div class="resources">
+                    <div class="content-section">
+                        <h3>Curated Resources</h3>
+                        <ul class="resource-list">
+                            <li class="resource-item">
+                                <i class="fab fa-youtube resource-icon youtube"></i>
+                                <div>
+                                    <h4>Python for Beginners</h4>
+                                    <p>FreeCodeCamp YouTube Course</p>
+                                </div>
+                            </li>
+                            
+                            <li class="resource-item">
+                                <i class="fas fa-laptop-code resource-icon freecodecamp"></i>
+                                <div>
+                                    <h4>Scientific Computing with Python</h4>
+                                    <p>freeCodeCamp Certification</p>
+                                </div>
+                            </li>
+                            
+                            <li class="resource-item">
+                                <i class="fas fa-book resource-icon coursera"></i>
+                                <div>
+                                    <h4>Python for Everybody</h4>
+                                    <p>Coursera Specialization</p>
+                                </div>
+                            </li>
+                            
+                            <li class="resource-item">
+                                <i class="fas fa-book-open resource-icon"></i>
+                                <div>
+                                    <h4>Automate the Boring Stuff</h4>
+                                    <p>Free Online Book</p>
+                                </div>
+                            </li>
+                            
+                            <li class="resource-item">
+                                <i class="fab fa-github resource-icon"></i>
+                                <div>
+                                    <h4>Python Practice Projects</h4>
+                                    <p>GitHub Repository</p>
+                                </div>
+                            </li>
+                        </ul>
                     </div>
-                    <div class="header-icon">
-                        <i class="fas fa-video"></i>
-                    </div>
-                    <div class="header-icon">
-                        <i class="fas fa-info-circle"></i>
+                    
+                    <div class="content-section">
+                        <h3>AI Suggestions</h3>
+                        <div class="ai-suggestion">
+                            <p>Based on your interest in web development, I recommend focusing on Flask or Django after mastering Python basics. These frameworks will help you build powerful web applications.</p>
+                        </div>
                     </div>
                 </div>
             </div>
+        </div>
+    </section>
+    
+    <!-- AI Assistant -->
+    <section class="ai-assistant">
+        <div class="container">
+            <div class="assistant-header">
+                <div class="assistant-icon">
+                    <i class="fas fa-robot"></i>
+                </div>
+                <h2>Learning Assistant</h2>
+            </div>
             
-            <div class="chat-messages">
-                <!-- Messages will be populated dynamically -->
+            <div class="chat-container" id="chat-container">
+                <div class="message ai-message">
+                    <p>Hello! I'm your learning assistant. How can I help you with your learning journey today? You can ask about topics, resources, or learning strategies.</p>
+                </div>
             </div>
             
             <div class="chat-input-container">
-                <div class="chat-input">
-                    <i class="fas fa-plus-circle"></i>
-                    <i class="far fa-laugh"></i>
-                    <input type="text" placeholder="Type a message..." id="message-input">
-                </div>
+                <input type="text" class="chat-input" id="chat-input" placeholder="Ask me anything about learning...">
                 <button class="send-btn" id="send-btn">
                     <i class="fas fa-paper-plane"></i>
                 </button>
             </div>
         </div>
-    </div>
+    </section>
+    
+    <!-- Categories Section -->
+    <section class="categories">
+        <div class="container">
+            <h2 class="section-title">Browse by Category</h2>
+            
+            <div class="category coding">
+                <div class="category-header">
+                    <h3 class="category-title"><i class="fas fa-code"></i> Coding & Development</h3>
+                    <button class="btn btn-outline">View All</button>
+                </div>
+                
+                <div class="topics-container">
+                    <div class="topic-card" data-topic="python">
+                        <div class="topic-icon">
+                            <i class="fab fa-python"></i>
+                        </div>
+                        <h3>Python</h3>
+                    </div>
+                    
+                    <div class="topic-card" data-topic="javascript">
+                        <div class="topic-icon">
+                            <i class="fab fa-js"></i>
+                        </div>
+                        <h3>JavaScript</h3>
+                    </div>
+                    
+                    <div class="topic-card" data-topic="web-dev">
+                        <div class="topic-icon">
+                            <i class="fas fa-globe"></i>
+                        </div>
+                        <h3>Web Development</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="category business">
+                <div class="category-header">
+                    <h3 class="category-title"><i class="fas fa-chart-line"></i> Business & Marketing</h3>
+                    <button class="btn btn-outline">View All</button>
+                </div>
+                
+                <div class="topics-container">
+                    <div class="topic-card" data-topic="digital-marketing">
+                        <div class="topic-icon">
+                            <i class="fas fa-bullhorn"></i>
+                        </div>
+                        <h3>Digital Marketing</h3>
+                    </div>
+                    
+                    <div class="topic-card" data-topic="entrepreneurship">
+                        <div class="topic-icon">
+                            <i class="fas fa-lightbulb"></i>
+                        </div>
+                        <h3>Entrepreneurship</h3>
+                    </div>
+                    
+                    <div class="topic-card" data-topic="finance">
+                        <div class="topic-icon">
+                            <i class="fas fa-coins"></i>
+                        </div>
+                        <h3>Personal Finance</h3>
+                    </div>
+                </div>
+            </div>
+            
+            <div class="category design">
+                <div class="category-header">
+                    <h3 class="category-title"><i class="fas fa-paint-brush"></i> Design & Creativity</h3>
+                    <button class="btn btn-outline">View All</button>
+                </div>
+                
+                <div class="topics-container">
+                    <div class="topic-card" data-topic="ui-ux">
+                        <div class="topic-icon">
+                            <i class="fas fa-mobile-alt"></i>
+                        </div>
+                        <h3>UI/UX Design</h3>
+                    </div>
+                    
+                    <div class="topic-card" data-topic="graphic-design">
+                        <div class="topic-icon">
+                            <i class="fas fa-palette"></i>
+                        </div>
+                        <h3>Graphic Design</h3>
+                    </div>
+                    
+                    <div class="topic-card" data-topic="video-editing">
+                        <div class="topic-icon">
+                            <i class="fas fa-video"></i>
+                        </div>
+                        <h3>Video Editing</h3>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </section>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="container">
+            <div class="footer-content">
+                <div class="footer-section">
+                    <h3>LearnAnything</h3>
+                    <p>Your personalized learning platform for mastering any skill or topic. We provide curated learning paths and resources to help you achieve your goals.</p>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Quick Links</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Home</a></li>
+                        <li><a href="#">All Topics</a></li>
+                        <li><a href="#">Learning Paths</a></li>
+                        <li><a href="#">Resources</a></li>
+                        <li><a href="#">Community</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Popular Topics</h3>
+                    <ul class="footer-links">
+                        <li><a href="#">Python Programming</a></li>
+                        <li><a href="#">Web Development</a></li>
+                        <li><a href="#">Digital Marketing</a></li>
+                        <li><a href="#">UI/UX Design</a></li>
+                        <li><a href="#">Data Science</a></li>
+                    </ul>
+                </div>
+                
+                <div class="footer-section">
+                    <h3>Connect With Us</h3>
+                    <ul class="footer-links">
+                        <li><a href="#"><i class="fab fa-twitter"></i> Twitter</a></li>
+                        <li><a href="#"><i class="fab fa-facebook"></i> Facebook</a></li>
+                        <li><a href="#"><i class="fab fa-instagram"></i> Instagram</a></li>
+                        <li><a href="#"><i class="fab fa-youtube"></i> YouTube</a></li>
+                        <li><a href="#"><i class="fab fa-github"></i> GitHub</a></li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="copyright">
+                <p>&copy; 2023 LearnAnything. All rights reserved. Designed with ❤️ for lifelong learners.</p>
+            </div>
+        </div>
+    </footer>
     
     <script>
-        // Sample data for the application
-        const sampleUsers = [
-            { id: 1, name: "Emma Stone", avatar: "ES", unread: 3, lastMessage: "See you tomorrow!", time: "10:30 AM", online: true },
-            { id: 2, name: "Michael Johnson", avatar: "MJ", unread: 0, lastMessage: "Thanks for the help!", time: "9:15 AM", online: true },
-            { id: 3, name: "Sarah Williams", avatar: "SW", unread: 0, lastMessage: "Let's meet this weekend", time: "Yesterday", online: false },
-            { id: 4, name: "Robert Davis", avatar: "RD", unread: 7, lastMessage: "Did you see the game last night?", time: "Yesterday", online: true },
-            { id: 5, name: "Jennifer Brown", avatar: "JB", unread: 0, lastMessage: "I'll send you the files", time: "Wed", online: false },
-            { id: 6, name: "Work Group", avatar: "WG", unread: 0, lastMessage: "John: Meeting at 3pm", time: "Tue", online: false },
-            { id: 7, name: "David Miller", avatar: "DM", unread: 0, lastMessage: "Call me when you're free", time: "Mon", online: true },
-            { id: 8, name: "Family Group", avatar: "FG", unread: 12, lastMessage: "Mom: Dinner on Sunday?", time: "Sun", online: false },
-            { id: 9, name: "Alex Wilson", avatar: "AW", unread: 0, lastMessage: "The party was great!", time: "Jun 12", online: false },
-            { id: 10, name: "Tech Support", avatar: "TS", unread: 0, lastMessage: "Your ticket has been resolved", time: "Jun 10", online: false }
-        ];
-
-        const sampleMessages = [
-            { id: 1, sender: "ES", content: "Hey there! How are you doing?", time: "10:15 AM", sent: false },
-            { id: 2, sender: "JS", content: "I'm doing great! Just finished my project.", time: "10:16 AM", sent: true },
-            { id: 3, sender: "ES", content: "That's awesome! What are you working on next?", time: "10:17 AM", sent: false },
-            { id: 4, sender: "JS", content: "I'm starting a new real-time messaging app. It's going to be amazing!", time: "10:18 AM", sent: true },
-            { id: 5, sender: "ES", content: "Wow, that sounds really cool! Can I help with anything?", time: "10:19 AM", sent: false },
-            { id: 6, sender: "JS", content: "Actually, I could use some design help. Are you free tomorrow?", time: "10:20 AM", sent: true },
-            { id: 7, sender: "ES", content: "Sure! Let's meet at 2pm at the coffee shop downtown.", time: "10:21 AM", sent: false },
-            { id: 8, sender: "JS", content: "Perfect! I'll see you then.", time: "10:22 AM", sent: true },
-            { id: 9, sender: "ES", content: "Looking forward to it! 😊", time: "10:23 AM", sent: false }
-        ];
-
-        // DOM elements
-        const authScreen = document.getElementById('auth-screen');
-        const chatScreen = document.getElementById('chat-screen');
-        const loginForm = document.getElementById('login-form');
-        const registerForm = document.getElementById('register-form');
-        const loginBtn = document.getElementById('login-btn');
-        const registerBtn = document.getElementById('register-btn');
-        const conversationsContainer = document.querySelector('.conversations');
-        const chatMessagesContainer = document.querySelector('.chat-messages');
-        const messageInput = document.getElementById('message-input');
-        const sendBtn = document.getElementById('send-btn');
-        const authTabs = document.querySelectorAll('.auth-tab');
-        const switchToLogin = document.getElementById('switch-to-login');
-        const backToConversations = document.querySelector('.back-to-conversations');
-        const sidebar = document.querySelector('.sidebar');
-        const chatArea = document.querySelector('.chat-area');
-
-        // Initialize the application
-        document.addEventListener('DOMContentLoaded', () => {
-            renderConversations();
-            renderMessages();
-            setupEventListeners();
-            simulateTyping();
-        });
-
-        // Render conversation list
-        function renderConversations() {
-            conversationsContainer.innerHTML = '';
-            sampleUsers.forEach(user => {
-                const conversation = document.createElement('div');
-                conversation.className = 'conversation';
-                conversation.dataset.id = user.id;
-                
-                conversation.innerHTML = `
-                    <div class="conversation-avatar">
-                        <div class="avatar">
-                            <span>${user.avatar}</span>
-                            ${user.online ? '<div class="online-status"></div>' : ''}
-                        </div>
-                    </div>
-                    <div class="conversation-info">
-                        <div class="conversation-top">
-                            <div class="conversation-name">${user.name}</div>
-                            <div class="conversation-time">${user.time}</div>
-                        </div>
-                        <div class="conversation-bottom">
-                            <div class="conversation-last-msg">${user.lastMessage}</div>
-                            ${user.unread > 0 ? `<div class="conversation-unread">${user.unread}</div>` : ''}
-                        </div>
-                    </div>
-                `;
-                
-                conversationsContainer.appendChild(conversation);
-            });
-        }
-
-        // Render chat messages
-        function renderMessages() {
-            chatMessagesContainer.innerHTML = '';
-            sampleMessages.forEach(msg => {
-                const message = document.createElement('div');
-                message.className = `message ${msg.sent ? 'message-sent' : 'message-received'}`;
-                
-                message.innerHTML = `
-                    <div class="message-bubble">${msg.content}</div>
-                    <div class="message-time">${msg.time}</div>
-                `;
-                
-                chatMessagesContainer.appendChild(message);
-            });
-            
-            // Scroll to bottom
-            chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
-        }
-
-        // Simulate typing indicator
-        function simulateTyping() {
-            setTimeout(() => {
-                const typing = document.createElement('div');
-                typing.className = 'typing-indicator';
-                typing.innerHTML = `
-                    <span></span>
-                    <span></span>
-                    <span></span>
-                `;
-                chatMessagesContainer.appendChild(typing);
-                chatMessagesContainer.scrollTop = chatMessagesContainer.scrollHeight;
-                
-                // Remove typing after delay
-                setTimeout(() => {
-                    typing.remove();
-                }, 3000);
-            }, 2000);
-        }
-
-        // Setup event listeners
-        function setupEventListeners() {
-            // Login and register
-            loginBtn.addEventListener('click', () => {
-                const email = document.getElementById('login-email').value;
-                const password = document.getElementById('login-password').value;
-                
-                if (email && password) {
-                    authScreen.style.display = 'none';
-                    chatScreen.style.display = 'flex';
-                }
-            });
-            
-            registerBtn.addEventListener('click', () => {
-                const name = document.getElementById('register-name').value;
-                const email = document.getElementById('register-email').value;
-                const password = document.getElementById('register-password').value;
-                
-                if (name && email && password) {
-                    authScreen.style.display = 'none';
-                    chatScreen.style.display = 'flex';
-                }
-            });
-            
-            // Switch between login and register
-            authTabs.forEach(tab => {
-                tab.addEventListener('click', () => {
-                    authTabs.forEach(t => t.classList.remove('active'));
-                    tab.classList.add('active');
-                    
-                    loginForm.classList.remove('active');
-                    registerForm.classList.remove('active');
-                    
-                    if (tab.dataset.tab === 'login') {
-                        loginForm.classList.add('active');
-                    } else {
-                        registerForm.classList.add('active');
-                    }
-                });
-            });
-            
-            switchToLogin.addEventListener('click', (e) => {
-                e.preventDefault();
-                authTabs.forEach(t => t.classList.remove('active'));
-                document.querySelector('[data-tab="login"]').classList.add('active');
-                loginForm.classList.add('active');
-                registerForm.classList.remove('active');
-            });
-            
-            // Send message
-            sendBtn.addEventListener('click', sendMessage);
-            messageInput.addEventListener('keypress', (e) => {
-                if (e.key === 'Enter') {
-                    sendMessage();
-                }
-            });
-            
-            // Conversation selection
-            conversationsContainer.addEventListener('click', (e) => {
-                const conversation = e.target.closest('.conversation');
-                if (conversation) {
-                    // Set active conversation
-                    document.querySelectorAll('.conversation').forEach(c => c.classList.remove('active'));
-                    conversation.classList.add('active');
-                    
-                    // Update chat header
-                    const userId = conversation.dataset.id;
-                    const user = sampleUsers.find(u => u.id == userId);
-                    if (user) {
-                        document.querySelector('.chat-header-name').textContent = user.name;
-                        document.querySelector('.chat-header-status').textContent = user.online ? 'Online - Last seen just now' : 'Offline';
-                        document.querySelector('.chat-area .avatar span').textContent = user.avatar;
-                    }
-                    
-                    // For mobile: show chat area and hide sidebar
-                    if (window.innerWidth <= 768) {
-                        sidebar.classList.remove('active');
-                        chatArea.classList.add('active');
-                    }
-                }
-            });
-            
-            // Back to conversations on mobile
-            backToConversations.addEventListener('click', () => {
-                sidebar.classList.add('active');
-                chatArea.classList.remove('active');
-            });
-        }
-
-        // Send a new message
-        function sendMessage() {
-            const content = messageInput.value.trim();
-            if (content) {
-                // Create new message
-                const newMessage = {
-                    id: sampleMessages.length + 1,
-                    sender: "JS",
-                    content: content,
-                    time: getCurrentTime(),
-                    sent: true
-                };
-                
-                // Add to messages
-                sampleMessages.push(newMessage);
-                
-                // Clear input
-                messageInput.value = '';
-                
-                // Re-render messages
-                renderMessages();
-                
-                // Simulate reply
-                setTimeout(() => {
-                    const reply = {
-                        id: sampleMessages.length + 1,
-                        sender: "ES",
-                        content: getRandomReply(),
-                        time: getCurrentTime(),
-                        sent: false
-                    };
-                    
-                    sampleMessages.push(reply);
-                    renderMessages();
-                    simulateTyping();
-                }, 2000);
+        // Sample data for topics
+        const topics = {
+            'python': {
+                title: 'Python Programming',
+                icon: 'fab fa-python',
+                category: 'coding',
+                overview: 'Python is a versatile, high-level programming language known for its readability and simplicity. It\'s widely used in web development, data science, AI, automation, and more. Python\'s extensive libraries and frameworks make it a favorite among beginners and professionals alike.',
+                beginnerPath: [
+                    'Python Basics: Learn syntax, variables, data types, and basic operations',
+                    'Control Structures: Master loops, conditionals, and error handling',
+                    'Functions & Modules: Create reusable code and organize with modules',
+                    'Data Structures: Understand lists, tuples, dictionaries, and sets',
+                    'Object-Oriented Programming: Learn classes, objects, inheritance, and polymorphism'
+                ],
+                resources: [
+                    {type: 'youtube', title: 'Python for Beginners', source: 'FreeCodeCamp YouTube Course'},
+                    {type: 'freecodecamp', title: 'Scientific Computing with Python', source: 'freeCodeCamp Certification'},
+                    {type: 'coursera', title: 'Python for Everybody', source: 'Coursera Specialization'},
+                    {type: 'book', title: 'Automate the Boring Stuff', source: 'Free Online Book'},
+                    {type: 'github', title: 'Python Practice Projects', source: 'GitHub Repository'}
+                ],
+                suggestions: [
+                    'Based on your interest in web development, I recommend focusing on Flask or Django after mastering Python basics. These frameworks will help you build powerful web applications.'
+                ]
+            },
+            'javascript': {
+                title: 'JavaScript',
+                icon: 'fab fa-js',
+                category: 'coding',
+                overview: 'JavaScript is the programming language of the web. It allows you to create dynamic, interactive websites and applications. Along with HTML and CSS, JavaScript is essential for front-end web development and increasingly popular for back-end development with Node.js.',
+                beginnerPath: [
+                    'JavaScript Fundamentals: Variables, data types, and operators',
+                    'DOM Manipulation: Interacting with HTML elements',
+                    'Control Structures: Loops and conditionals',
+                    'Functions and Scope: Creating reusable code',
+                    'ES6 Features: Arrow functions, promises, and classes'
+                ],
+                resources: [
+                    {type: 'youtube', title: 'JavaScript Full Course', source: 'FreeCodeCamp'},
+                    {type: 'udemy', title: 'Modern JavaScript', source: 'Udemy Course'},
+                    {type: 'book', title: 'Eloquent JavaScript', source: 'Free Online Book'},
+                    {type: 'github', title: 'JavaScript Algorithms', source: 'GitHub Repository'}
+                ],
+                suggestions: [
+                    'After mastering JavaScript fundamentals, consider learning a framework like React or Vue.js to build modern web applications.'
+                ]
+            },
+            'ui-ux': {
+                title: 'UI/UX Design',
+                icon: 'fas fa-paint-brush',
+                category: 'design',
+                overview: 'UI (User Interface) and UX (User Experience) design focuses on creating intuitive, efficient, and enjoyable experiences for users interacting with digital products. UI deals with the visual aspects, while UX focuses on the overall feel and usability.',
+                beginnerPath: [
+                    'Design Principles: Learn core design concepts',
+                    'User Research: Understanding user needs',
+                    'Wireframing & Prototyping: Creating blueprints for interfaces',
+                    'Visual Design: Color theory, typography, and layout',
+                    'Usability Testing: Evaluating designs with real users'
+                ],
+                resources: [
+                    {type: 'coursera', title: 'UI/UX Design Specialization', source: 'Coursera'},
+                    {type: 'youtube', title: 'Figma Tutorial for Beginners', source: 'YouTube'},
+                    {type: 'book', title: 'Don\'t Make Me Think', source: 'Steve Krug'}
+                ],
+                suggestions: [
+                    'Practice by redesigning existing apps and websites. Focus on solving real user problems rather than just making things look pretty.'
+                ]
             }
+        };
+        
+        // DOM Elements
+        const learningGuide = document.getElementById('learning-guide');
+        const guideTitle = document.querySelector('.guide-title h2');
+        const guideIcon = document.querySelector('.guide-title i');
+        const overviewContent = document.querySelector('.overview .content-section p');
+        const learningPathContainer = document.querySelector('.learning-path');
+        const resourcesContainer = document.querySelector('.resource-list');
+        const suggestionsContainer = document.querySelector('.ai-suggestion p');
+        const topicCards = document.querySelectorAll('.topic-card');
+        const searchInput = document.querySelector('.search-input');
+        const searchBtn = document.querySelector('.search-btn');
+        const chatContainer = document.getElementById('chat-container');
+        const chatInput = document.getElementById('chat-input');
+        const sendBtn = document.getElementById('send-btn');
+        const levelButtons = document.querySelectorAll('.level-btn');
+        
+        // Load topic data
+        function loadTopic(topicId) {
+            const topic = topics[topicId];
+            if (!topic) return;
+            
+            // Update guide
+            guideTitle.textContent = topic.title;
+            guideIcon.className = topic.icon;
+            overviewContent.textContent = topic.overview;
+            
+            // Clear previous content
+            learningPathContainer.innerHTML = '';
+            resourcesContainer.innerHTML = '';
+            
+            // Add learning path
+            topic.beginnerPath.forEach((step, index) => {
+                const stepElement = document.createElement('div');
+                stepElement.className = 'step';
+                stepElement.innerHTML = `
+                    <div class="step-number">${index + 1}</div>
+                    <div class="step-content">
+                        <h4>${step.split(':')[0]}</h4>
+                        <p>${step.split(':')[1]}</p>
+                    </div>
+                `;
+                learningPathContainer.appendChild(stepElement);
+            });
+            
+            // Add resources
+            topic.resources.forEach(resource => {
+                const resourceElement = document.createElement('li');
+                resourceElement.className = 'resource-item';
+                
+                let iconClass = 'fas fa-link';
+                if (resource.type === 'youtube') iconClass = 'fab fa-youtube youtube';
+                if (resource.type === 'coursera') iconClass = 'fas fa-book coursera';
+                if (resource.type === 'udemy') iconClass = 'fas fa-graduation-cap udemy';
+                if (resource.type === 'freecodecamp') iconClass = 'fas fa-laptop-code freecodecamp';
+                if (resource.type === 'github') iconClass = 'fab fa-github';
+                if (resource.type === 'book') iconClass = 'fas fa-book-open';
+                
+                resourceElement.innerHTML = `
+                    <i class="${iconClass} resource-icon"></i>
+                    <div>
+                        <h4>${resource.title}</h4>
+                        <p>${resource.source}</p>
+                    </div>
+                `;
+                resourcesContainer.appendChild(resourceElement);
+            });
+            
+            // Add suggestions
+            suggestionsContainer.textContent = topic.suggestions[0];
+            
+            // Show guide
+            learningGuide.style.display = 'block';
+            learningGuide.scrollIntoView({ behavior: 'smooth' });
         }
-
-        // Get current time in HH:MM format
-        function getCurrentTime() {
-            const now = new Date();
-            return now.toLocaleTimeString([], { hour: '2-digit', minute: '2-digit' });
+        
+        // Event Listeners
+        topicCards.forEach(card => {
+            card.addEventListener('click', () => {
+                const topicId = card.dataset.topic;
+                loadTopic(topicId);
+            });
+        });
+        
+        searchBtn.addEventListener('click', () => {
+            const searchTerm = searchInput.value.toLowerCase().trim();
+            if (searchTerm) {
+                // Simple search implementation - in a real app this would be more sophisticated
+                if (searchTerm.includes('python')) loadTopic('python');
+                else if (searchTerm.includes('javascript')) loadTopic('javascript');
+                else if (searchTerm.includes('ui') || searchTerm.includes('ux')) loadTopic('ui-ux');
+                else {
+                    // Show a message if topic not found
+                    alert(`We're working on adding "${searchTerm}" to our platform! In the meantime, try one of our popular topics.`);
+                }
+            }
+        });
+        
+        searchInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                searchBtn.click();
+            }
+        });
+        
+        // Level selector
+        levelButtons.forEach(button => {
+            button.addEventListener('click', () => {
+                levelButtons.forEach(btn => btn.classList.remove('active'));
+                button.classList.add('active');
+                
+                // In a real app, this would load different content
+                alert(`Loading ${button.dataset.level} content...`);
+            });
+        });
+        
+        // AI Chat Assistant
+        function addMessage(text, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'ai-message'}`;
+            messageDiv.innerHTML = `<p>${text}</p>`;
+            chatContainer.appendChild(messageDiv);
+            chatContainer.scrollTop = chatContainer.scrollHeight;
         }
-
-        // Generate a random reply
-        function getRandomReply() {
-            const replies = [
-                "That's interesting!",
-                "Tell me more about that.",
-                "I agree with you.",
-                "Let me think about it...",
-                "Sounds like a plan!",
-                "I'm not sure about that.",
-                "What do you think we should do next?",
-                "That's great news!",
-                "I'll check and get back to you.",
-                "Looking forward to it!"
-            ];
-            return replies[Math.floor(Math.random() * replies.length)];
+        
+        // AI Responses
+        const aiResponses = [
+            "That's a great question! I recommend starting with the fundamentals before moving to advanced topics.",
+            "Based on your interests, I'd suggest focusing on practical projects to reinforce your learning.",
+            "Many learners find it helpful to dedicate at least 30 minutes daily to consistent practice.",
+            "I've noticed you're interested in several topics. Would you like me to suggest a learning path that combines them?",
+            "Consider joining a study group or community to stay motivated and get feedback on your progress.",
+            "Don't forget to take breaks! Research shows that spaced repetition improves long-term retention."
+        ];
+        
+        function getAIResponse() {
+            const randomIndex = Math.floor(Math.random() * aiResponses.length);
+            return aiResponses[randomIndex];
         }
+        
+        sendBtn.addEventListener('click', () => {
+            const message = chatInput.value.trim();
+            if (message) {
+                addMessage(message, true);
+                chatInput.value = '';
+                
+                // Simulate AI thinking
+                setTimeout(() => {
+                    addMessage(getAIResponse());
+                }, 1000);
+            }
+        });
+        
+        chatInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendBtn.click();
+            }
+        });
+        
+        // Initialize with a topic
+        window.addEventListener('load', () => {
+            loadTopic('python');
+        });
     </script>
 </body>
 </html>
